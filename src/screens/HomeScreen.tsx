@@ -9,15 +9,15 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import DirectoryCard from "../components/DirectoryCard";
 import SearchBar from "../components/SearchBar";
-import { directories } from "../data/directories";
 import { Directory } from "../types";
 import { colors } from "../theme/colors";
 
 type Props = {
+  directories: Directory[];
   onSelectDirectory: (directory: Directory) => void;
 };
 
-export default function HomeScreen({ onSelectDirectory }: Props) {
+export default function HomeScreen({ directories, onSelectDirectory }: Props) {
   const [search, setSearch] = useState("");
   const { width } = useWindowDimensions();
 
@@ -25,7 +25,7 @@ export default function HomeScreen({ onSelectDirectory }: Props) {
     return directories.filter((item) =>
       item.name.toLowerCase().includes(search.toLowerCase())
     );
-  }, [search]);
+  }, [directories, search]);
 
   return (
     <View style={styles.container}>
@@ -41,7 +41,7 @@ export default function HomeScreen({ onSelectDirectory }: Props) {
       </View>
 
       <Text style={styles.subtitle}>
-        Select an important directory to view stored messages.
+        Select an important directory to view or add stored messages.
       </Text>
 
       <SearchBar

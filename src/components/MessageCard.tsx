@@ -1,11 +1,12 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Message } from "../types";
 import { colors } from "../theme/colors";
 
 type Props = {
   message: Message;
+  onDelete?: () => void;
 };
 
 function getPriorityColor(priority: Message["priority"]) {
@@ -14,8 +15,26 @@ function getPriorityColor(priority: Message["priority"]) {
   return colors.success;
 }
 
-export default function MessageCard({ message }: Props) {
+export default function MessageCard({ message, onDelete }: Props) {
   const priorityColor = getPriorityColor(message.priority);
+
+  const confirmDelete = () => {
+    Alert.alert(
+      "Delete Message",
+      "Are you sure you want to delete this message?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: onDelete,
+        },
+      ]
+    );
+  };
 
   return (
     <View style={styles.card}>
@@ -25,8 +44,16 @@ export default function MessageCard({ message }: Props) {
           <Text style={styles.title}>{message.title}</Text>
         </View>
 
-        <View style={[styles.badge, { backgroundColor: priorityColor }]}>
-          <Text style={styles.badgeText}>{message.priority}</Text>
+        <View style={styles.rightSide}>
+          <View style={[styles.badge, { backgroundColor: priorityColor }]}>
+            <Text style={styles.badgeText}>{message.priority}</Text>
+          </View>
+
+          {onDelete && (
+            <Pressable onPress={confirmDelete} style={styles.deleteButton}>
+              <Ionicons name="trash-outline" size={18} color="#FFFFFF" />
+            </Pressable>
+          )}
         </View>
       </View>
 
@@ -64,6 +91,12 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     color: colors.text,
     marginLeft: 8,
+    flexShrink: 1,
+  },
+  rightSide: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
   },
   body: {
     marginTop: 12,
@@ -75,12 +108,19 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingHorizontal: 10,
     paddingVertical: 4,
-    alignSelf: "flex-start",
   },
   badgeText: {
     color: "#FFFFFF",
     fontSize: 11,
     fontWeight: "800",
+  },
+  deleteButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 12,
+    backgroundColor: colors.danger,
+    alignItems: "center",
+    justifyContent: "center",
   },
   footer: {
     marginTop: 14,
